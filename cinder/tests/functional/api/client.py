@@ -198,6 +198,9 @@ class TestOpenStackClient(object):
         rel_url = '/volumes/detail' if detail else '/volumes'
         return self.api_get(rel_url)['volumes']
 
+    def get_diskusages(self):
+        return self.api_get('/volumes/diskusage')['volumes']
+
     def post_volume(self, volume):
         return self.api_post('/volumes', volume)['volume']
 

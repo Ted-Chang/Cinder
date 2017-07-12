@@ -32,6 +32,7 @@ from cinder.volume import volume_types
 LOG = logging.getLogger(__name__)
 
 SUMMARY_BASE_MICRO_VERSION = '3.12'
+DISKUSAGE_BASE_MICRO_VERSION = '3.28'
 
 
 def check_policy(context, action, target_obj=None):
@@ -131,6 +132,32 @@ class VolumeController(volumes_v2.VolumeController):
             volumes = self._view_builder.detail_list(req, volumes)
         else:
             volumes = self._view_builder.summary_list(req, volumes)
+        return volumes
+
+    @wsgi.Controller.api_version(DISKUSAGE_BASE_MICRO_VERSION)
+    def diskusage(self, req):
+        """Return a list of volumes, along with their disk usage info."""
+        context = req.environ['cinder.context']
+        params = req.params.copy()
+
+        marker, limit, offset = common.get_pagination_params(params)
+        sort_keys, sort_dirs = common.get_sort_params(params)
+        filters = params
+
+        utils.remove_invalid_filter_options(context, filters,
+                                            self._get_volume_filter_options())
+        self.volume_api.check_volume_filters(filters, True)
+
+        volumes = self.volume_api.get_all(context, marker, limit,
+                                          sort_keys=sort_keys,
+                                          sort_dirs=sort_dirs,
+                                          filters=filters,
+                                          viewable_admin_meta=True,
+                                          offset=offset)
+
+        req.cache_db_volumes(volumes.objects)
+
+        volumes = self._view_builder.diskusage_list(req, volumes)
         return volumes
 
     @wsgi.Controller.api_version(SUMMARY_BASE_MICRO_VERSION)

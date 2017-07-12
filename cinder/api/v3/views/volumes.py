@@ -44,3 +44,20 @@ class ViewBuilder(views_v2.ViewBuilder):
             volume_ref['volume']['provider_id'] = volume.get('provider_id')
 
         return volume_ref
+
+    def diskusage_list(self, request, volumes, volume_count=None):
+        """Show a list of volumes, along with their disk usage info."""
+        return self._list_view(self.diskusage, request, volumes,
+                               volume_count)
+
+    def diskusage(self, request, volume):
+        return {
+            'volume': {
+                'id': volume['id'],
+                'name': volume['display_name'],
+                'links': self._get_links(request, volume['id']),
+                # We just hardcode 10 here for a test, replace it with
+                # code that calculates the disk usage
+                'disk_usage': '10',
+            },
+        }

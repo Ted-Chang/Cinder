@@ -40,6 +40,11 @@ class VolumesTest(functional_helpers._FunctionalTestBase):
         volumes = self.api.get_volumes()
         self.assertIsNotNone(volumes)
 
+    def test_get_diskusages(self):
+        """Simple check that listing volumes diskusage works."""
+        volumes = self.api.get_diskusages()
+        self.assertIsNotNone(volumes)
+
     def test_create_and_delete_volume(self):
         """Creates and deletes a volume."""
 

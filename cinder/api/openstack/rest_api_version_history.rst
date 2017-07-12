@@ -284,3 +284,7 @@ user documentation.
 3.27
 ----
   Added new attachment API's
+
+3.28
+----
+  Added volume diskusage API
